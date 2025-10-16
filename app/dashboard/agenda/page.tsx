@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Clock, User, Scissors } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, Plus, Scissors, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -13,6 +13,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -20,8 +22,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { Appointment } from '@/types';
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8h às 20h
@@ -93,10 +93,10 @@ export default function AgendaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const service = services.find(s => s.id === formData.serviceId);
     const professional = professionals.find(p => p.id === formData.professionalId);
-    
+
     if (!service || !professional) return;
 
     try {
@@ -194,7 +194,7 @@ export default function AgendaPage() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const days = [];
-    
+
     // Days from previous month
     const firstDayOfWeek = firstDay.getDay();
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
@@ -202,19 +202,19 @@ export default function AgendaPage() {
       day.setDate(day.getDate() - (i + 1));
       days.push(day);
     }
-    
+
     // Days from current month
     for (let i = 1; i <= lastDay.getDate(); i++) {
       days.push(new Date(year, month, i));
     }
-    
+
     // Days from next month
     const remainingDays = 42 - days.length; // 6 weeks * 7 days
     for (let i = 1; i <= remainingDays; i++) {
       const day = new Date(year, month + 1, i);
       days.push(day);
     }
-    
+
     return days;
   };
 
@@ -466,7 +466,7 @@ export default function AgendaPage() {
                       const endTime = new Date();
                       endTime.setHours(parseInt(hours), parseInt(minutes) + apt.duration);
                       const endTimeStr = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
-                      
+
                       return (
                         <div
                           key={apt.id}
@@ -516,7 +516,7 @@ export default function AgendaPage() {
               {getWeekDays().map((day, idx) => {
                 const dayAppointments = getAppointmentsForDay(day);
                 const isToday = day.toDateString() === new Date().toDateString();
-                
+
                 return (
                   <div key={idx} className={`border rounded-lg p-2 ${isToday ? 'bg-primary/5 border-primary' : ''}`}>
                     <div className="text-center mb-2">
@@ -558,7 +558,7 @@ export default function AgendaPage() {
                   const dayAppointments = getAppointmentsForDay(day);
                   const isCurrentMonth = day.getMonth() === currentDate.getMonth();
                   const isToday = day.toDateString() === new Date().toDateString();
-                  
+
                   return (
                     <div
                       key={idx}

@@ -183,6 +183,7 @@ export default function ClientDetailView({ client, onClose, onUpdate }: ClientDe
         <div className="border-b bg-background dark:border-neutral-700">
           <div className="flex gap-4 px-6">
             <button
+              type="button"
               onClick={() => setActiveTab('overview')}
               className={`py-3 px-4 border-b-2 transition-colors ${
                 activeTab === 'overview'
@@ -193,6 +194,7 @@ export default function ClientDetailView({ client, onClose, onUpdate }: ClientDe
               Visão Geral
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('history')}
               className={`py-3 px-4 border-b-2 transition-colors ${
                 activeTab === 'history'
@@ -203,6 +205,7 @@ export default function ClientDetailView({ client, onClose, onUpdate }: ClientDe
               Histórico
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('notes')}
               className={`py-3 px-4 border-b-2 transition-colors ${
                 activeTab === 'notes'
