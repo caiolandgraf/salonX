@@ -85,10 +85,18 @@ const menuItems = [
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onToggle: () => void;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
   const pathname = usePathname();
+
+  // No mobile, fecha ao clicar em link. No desktop, mantém aberta
+  const handleLinkClick = () => {
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
 
   return (
     <>
@@ -104,7 +112,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 h-screen w-72 border-r border-border bg-card transition-transform duration-300 ease-in-out",
-          "md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -139,7 +146,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={onClose}
+                  onClick={handleLinkClick}
                   className={cn(
                     'sidebar-link',
                     isActive && 'sidebar-link-active'

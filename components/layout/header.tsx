@@ -26,11 +26,10 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-card px-4 md:px-6">
-      {/* Botão hamburger para mobile */}
+      {/* Botão hamburger - visível em todas as telas */}
       <Button
         variant="ghost"
         size="icon"
-        className="md:hidden"
         onClick={onMenuClick}
       >
         <Menu className="h-5 w-5" />
