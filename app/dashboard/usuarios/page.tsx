@@ -1,38 +1,52 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Search, Filter, CheckCircle2, XCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+  CheckCircle2,
+  Edit,
+  Filter,
+  Plus,
+  Search,
+  Trash2,
+  XCircle
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import type { User, UserRole } from '@/types';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import type { User, UserRole } from '@/types'
 
 const roleLabels: Record<UserRole, string> = {
   ADMIN: 'Administrador',
@@ -40,8 +54,8 @@ const roleLabels: Record<UserRole, string> = {
   EMPLOYEE: 'Funcionário',
   PROFESSIONAL: 'Profissional',
   RECEPTIONIST: 'Atendente',
-  CASHIER: 'Caixa',
-};
+  CASHIER: 'Caixa'
+}
 
 const roleColors: Record<UserRole, string> = {
   ADMIN: 'bg-primary/10 text-primary',
@@ -49,64 +63,65 @@ const roleColors: Record<UserRole, string> = {
   EMPLOYEE: 'bg-yellow-500/10 text-yellow-500',
   PROFESSIONAL: 'bg-green-500/10 text-green-500',
   RECEPTIONIST: 'bg-purple-500/10 text-purple-500',
-  CASHIER: 'bg-orange-500/10 text-orange-500',
-};
+  CASHIER: 'bg-orange-500/10 text-orange-500'
+}
 
 export default function UsersPage() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('all');
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedRole, setSelectedRole] = useState<string>('all')
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: '' as UserRole,
     password: '',
-    status: "ACTIVE" as "ACTIVE" | "INACTIVE",
-  });
+    status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE'
+  })
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
   const fetchUsers = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/users');
+      setLoading(true)
+      const response = await fetch('/api/users')
       if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
+        const data = await response.json()
+        setUsers(data)
       }
     } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
+      console.error('Erro ao buscar usuários:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
-    return matchesSearch && matchesRole;
-  });
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesRole = selectedRole === 'all' || user.role === selectedRole
+    return matchesSearch && matchesRole
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     try {
       if (editingUser) {
         const response = await fetch(`/api/users/${editingUser.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
+          body: JSON.stringify(formData)
+        })
 
         if (response.ok) {
-          await fetchUsers();
+          await fetchUsers()
         }
       } else {
         const response = await fetch('/api/users', {
@@ -114,49 +129,49 @@ export default function UsersPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...formData,
-            permissions: formData.role === 'ADMIN' ? ['ALL'] : ['READ'],
-          }),
-        });
+            permissions: formData.role === 'ADMIN' ? ['ALL'] : ['READ']
+          })
+        })
 
         if (response.ok) {
-          await fetchUsers();
+          await fetchUsers()
         }
       }
 
-      setIsOpen(false);
-      resetForm();
+      setIsOpen(false)
+      resetForm()
     } catch (error) {
-      console.error('Erro ao salvar usuário:', error);
+      console.error('Erro ao salvar usuário:', error)
     }
-  };
+  }
 
   const handleEdit = (user: User) => {
-    setEditingUser(user);
+    setEditingUser(user)
     setFormData({
       name: user.name,
       email: user.email,
       role: user.role,
       password: '',
-      status: user.status,
-    });
-    setIsOpen(true);
-  };
+      status: user.status
+    })
+    setIsOpen(true)
+  }
 
   const handleDelete = async (userId: string) => {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
       try {
         const response = await fetch(`/api/users/${userId}`, {
-          method: 'DELETE',
-        });
+          method: 'DELETE'
+        })
 
         if (response.ok) {
-          await fetchUsers();
+          await fetchUsers()
         }
       } catch (error) {
-        console.error('Erro ao excluir usuário:', error);
+        console.error('Erro ao excluir usuário:', error)
       }
     }
-  };
+  }
 
   const resetForm = () => {
     setFormData({
@@ -164,10 +179,10 @@ export default function UsersPage() {
       email: '',
       role: '' as UserRole,
       password: '',
-      status: "ACTIVE",
-    });
-    setEditingUser(null);
-  };
+      status: 'ACTIVE'
+    })
+    setEditingUser(null)
+  }
 
   const getInitials = (name: string) => {
     return name
@@ -175,25 +190,28 @@ export default function UsersPage() {
       .map(n => n[0])
       .join('')
       .substring(0, 2)
-      .toUpperCase();
-  };
+      .toUpperCase()
+  }
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap md:flex-nowrap">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Usuários</h1>
           <p className="text-muted-foreground text-lg mt-1">
             Gerencie os usuários e permissões do sistema
           </p>
         </div>
-        <Dialog open={isOpen} onOpenChange={(open) => {
-          setIsOpen(open);
-          if (!open) resetForm();
-        }}>
+        <Dialog
+          open={isOpen}
+          onOpenChange={open => {
+            setIsOpen(open)
+            if (!open) resetForm()
+          }}
+        >
           <DialogTrigger asChild>
-            <Button size="lg">
+            <Button size="lg" className="mt-3 md:mt-0 w-full md:w-auto">
               <Plus className="mr-2 h-5 w-5" />
               Novo Usuário
             </Button>
@@ -205,7 +223,7 @@ export default function UsersPage() {
                   {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
                 </DialogTitle>
                 <DialogDescription className="text-base">
-                  {editingUser 
+                  {editingUser
                     ? 'Atualize as informações do usuário abaixo'
                     : 'Preencha as informações para criar um novo usuário'}
                 </DialogDescription>
@@ -217,7 +235,9 @@ export default function UsersPage() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="Digite o nome completo"
                     required
                   />
@@ -229,7 +249,9 @@ export default function UsersPage() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     placeholder="email@exemplo.com"
                     required
                   />
@@ -237,9 +259,11 @@ export default function UsersPage() {
 
                 <div className="grid gap-2">
                   <Label htmlFor="role">Função</Label>
-                  <Select 
-                    value={formData.role} 
-                    onValueChange={(value: UserRole) => setFormData({ ...formData, role: value })}
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value: UserRole) =>
+                      setFormData({ ...formData, role: value })
+                    }
                     required
                   >
                     <SelectTrigger>
@@ -257,13 +281,17 @@ export default function UsersPage() {
 
                 <div className="grid gap-2">
                   <Label htmlFor="password">
-                    {editingUser ? 'Nova Senha (deixe em branco para manter)' : 'Senha'}
+                    {editingUser
+                      ? 'Nova Senha (deixe em branco para manter)'
+                      : 'Senha'}
                   </Label>
                   <Input
                     id="password"
                     type="password"
                     value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
                     placeholder="••••••••"
                     required={!editingUser}
                   />
@@ -272,9 +300,12 @@ export default function UsersPage() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="active"
-                    checked={formData.status === "ACTIVE"}
-                    onCheckedChange={(checked) => 
-                      setFormData({ ...formData, status: checked ? "ACTIVE" : "INACTIVE" })
+                    checked={formData.status === 'ACTIVE'}
+                    onCheckedChange={checked =>
+                      setFormData({
+                        ...formData,
+                        status: checked ? 'ACTIVE' : 'INACTIVE'
+                      })
                     }
                   />
                   <Label
@@ -287,7 +318,11 @@ export default function UsersPage() {
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsOpen(false)}
+                >
                   Cancelar
                 </Button>
                 <Button type="submit">
@@ -305,18 +340,18 @@ export default function UsersPage() {
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-col md:flex-row">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Buscar por nome ou e-mail..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
             <Select value={selectedRole} onValueChange={setSelectedRole}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full md:w-[200px]">
                 <Filter className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Todas as funções" />
               </SelectTrigger>
@@ -340,7 +375,9 @@ export default function UsersPage() {
             <div>
               <CardTitle className="text-xl">Lista de Usuários</CardTitle>
               <CardDescription className="text-base mt-1">
-                {filteredUsers.length} usuário{filteredUsers.length !== 1 ? 's' : ''} encontrado{filteredUsers.length !== 1 ? 's' : ''}
+                {filteredUsers.length} usuário
+                {filteredUsers.length !== 1 ? 's' : ''} encontrado
+                {filteredUsers.length !== 1 ? 's' : ''}
               </CardDescription>
             </div>
           </div>
@@ -357,7 +394,7 @@ export default function UsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {filteredUsers.map(user => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -368,17 +405,21 @@ export default function UsersPage() {
                       </Avatar>
                       <div>
                         <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {user.email}
+                        </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${roleColors[user.role]}`}>
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${roleColors[user.role]}`}
+                    >
                       {roleLabels[user.role]}
                     </span>
                   </TableCell>
                   <TableCell>
-                    {user.status === "ACTIVE" ? (
+                    {user.status === 'ACTIVE' ? (
                       <div className="flex items-center gap-1 text-green-500">
                         <CheckCircle2 className="h-4 w-4" />
                         <span className="text-sm font-medium">Ativo</span>
@@ -420,5 +461,5 @@ export default function UsersPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

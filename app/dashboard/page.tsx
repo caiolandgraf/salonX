@@ -1,10 +1,23 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { DollarSign, Calendar, Users, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
-import { MetricCard } from '@/components/dashboard/metric-card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {
+  Calendar,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  Users
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { MetricCard } from '@/components/dashboard/metric-card'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState({
@@ -15,57 +28,68 @@ export default function DashboardPage() {
     revenueGrowth: 0,
     appointmentsGrowth: 0,
     clientsGrowth: 0,
-    appointmentsList: [] as any[],
-  });
-  const [loading, setLoading] = useState(true);
+    appointmentsList: [] as any[]
+  })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchMetrics();
-  }, []);
+    fetchMetrics()
+  }, [])
 
   const fetchMetrics = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/dashboard/metrics');
+      setLoading(true)
+      const response = await fetch('/api/dashboard/metrics')
       if (response.ok) {
-        const data = await response.json();
-        setMetrics(data);
+        const data = await response.json()
+        setMetrics(data)
       }
     } catch (error) {
-      console.error('Erro ao buscar métricas:', error);
+      console.error('Erro ao buscar métricas:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const todayAppointments = metrics.appointmentsList || [];
-  
+  const todayAppointments = metrics.appointmentsList || []
+
   const getStatusInfo = (status: string) => {
-    const statusMap: Record<string, { label: string; color: string; icon: any }> = {
-      COMPLETED: { label: 'Concluído', color: 'text-green-500', icon: CheckCircle2 },
-      CONFIRMED: { label: 'Agendado', color: 'text-muted-foreground', icon: null },
+    const statusMap: Record<
+      string,
+      { label: string; color: string; icon: any }
+    > = {
+      COMPLETED: {
+        label: 'Concluído',
+        color: 'text-green-500',
+        icon: CheckCircle2
+      },
+      CONFIRMED: {
+        label: 'Agendado',
+        color: 'text-muted-foreground',
+        icon: null
+      },
       CANCELLED: { label: 'Cancelado', color: 'text-red-500', icon: null },
-      NO_SHOW: { label: 'Faltou', color: 'text-orange-500', icon: null },
-    };
-    return statusMap[status] || statusMap.CONFIRMED;
-  };
+      NO_SHOW: { label: 'Faltou', color: 'text-orange-500', icon: null }
+    }
+    return statusMap[status] || statusMap.CONFIRMED
+  }
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground text-lg mt-1">
             Visão geral do seu negócio
           </p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="lg">
+        <div className="flex gap-3 flex-wrap mt-3 md:mt-0">
+          <Button variant="outline" size="lg" className="flex-1 w-full">
             <Calendar className="mr-2 h-5 w-5" />
             Ver Agenda
           </Button>
-          <Button size="lg">
+          <Button size="lg" className="flex-1 w-full">
             <DollarSign className="mr-2 h-5 w-5" />
             Novo Atendimento
           </Button>
@@ -111,9 +135,7 @@ export default function DashboardPage() {
                 {todayAppointments.length} agendamentos para hoje
               </CardDescription>
             </div>
-            <Button variant="outline">
-              Ver Todos
-            </Button>
+            <Button variant="outline">Ver Todos</Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -125,9 +147,9 @@ export default function DashboardPage() {
               </div>
             ) : (
               todayAppointments.map((appointment: any) => {
-                const statusInfo = getStatusInfo(appointment.status);
-                const StatusIcon = statusInfo.icon;
-                
+                const statusInfo = getStatusInfo(appointment.status)
+                const StatusIcon = statusInfo.icon
+
                 return (
                   <div
                     key={appointment.id}
@@ -138,23 +160,34 @@ export default function DashboardPage() {
                         <Clock className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-base">{appointment.client_name}</p>
+                        <p className="font-semibold text-base">
+                          {appointment.client_name}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          {appointment.service_name} • R$ {appointment.price.toFixed(2)}
+                          {appointment.service_name} • R${' '}
+                          {appointment.price.toFixed(2)}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <p className="font-semibold text-base">{appointment.time}</p>
+                        <p className="font-semibold text-base">
+                          {appointment.time}
+                        </p>
                         <div className="flex items-center gap-1 text-sm">
-                          {StatusIcon && <StatusIcon className={`h-4 w-4 ${statusInfo.color}`} />}
-                          <span className={statusInfo.color}>{statusInfo.label}</span>
+                          {StatusIcon && (
+                            <StatusIcon
+                              className={`h-4 w-4 ${statusInfo.color}`}
+                            />
+                          )}
+                          <span className={statusInfo.color}>
+                            {statusInfo.label}
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                );
+                )
               })
             )}
           </div>
@@ -200,5 +233,5 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

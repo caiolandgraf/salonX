@@ -1,74 +1,80 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import {
-    Package,
-    Plus,
-    Search,
-    AlertTriangle,
-    TrendingUp,
-    TrendingDown,
-    ShoppingCart,
-    Box,
-    Edit,
-    Trash2,
-    History,
-    Filter,
-} from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+  AlertTriangle,
+  Box,
+  Edit,
+  Filter,
+  History,
+  Package,
+  Plus,
+  Search,
+  ShoppingCart,
+  Trash2,
+  TrendingDown,
+  TrendingUp
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
-type ProductType = 'SERVICE' | 'RESALE';
-type ProductCategory = 'HAIR' | 'NAILS' | 'SKINCARE' | 'MAKEUP' | 'TOOLS' | 'OTHER';
-type MovementType = 'IN' | 'OUT' | 'ADJUSTMENT';
+type ProductType = 'SERVICE' | 'RESALE'
+type ProductCategory =
+  | 'HAIR'
+  | 'NAILS'
+  | 'SKINCARE'
+  | 'MAKEUP'
+  | 'TOOLS'
+  | 'OTHER'
+type MovementType = 'IN' | 'OUT' | 'ADJUSTMENT'
 
 interface Product {
-  id: string;
-  name: string;
-  type: ProductType;
-  category: ProductCategory;
-  brand: string;
-  sku: string;
-  currentStock: number;
-  minStock: number;
-  maxStock: number;
-  unit: string;
-  costPrice: number;
-  salePrice?: number;
-  supplier?: string;
-  location?: string;
-  notes?: string;
+  id: string
+  name: string
+  type: ProductType
+  category: ProductCategory
+  brand: string
+  sku: string
+  currentStock: number
+  minStock: number
+  maxStock: number
+  unit: string
+  costPrice: number
+  salePrice?: number
+  supplier?: string
+  location?: string
+  notes?: string
 }
 
 interface StockMovement {
-  id: string;
-  productId: string;
-  productName: string;
-  type: MovementType;
-  quantity: number;
-  date: string;
-  reason: string;
-  userId: string;
-  userName: string;
+  id: string
+  productId: string
+  productName: string
+  type: MovementType
+  quantity: number
+  date: string
+  reason: string
+  userId: string
+  userName: string
 }
 
 const mockProducts: Product[] = [
@@ -77,7 +83,7 @@ const mockProducts: Product[] = [
     name: 'Shampoo Profissional 1L',
     type: 'SERVICE',
     category: 'HAIR',
-    brand: 'L\'Oreal',
+    brand: "L'Oreal",
     sku: 'SHA-001',
     currentStock: 15,
     minStock: 10,
@@ -85,7 +91,7 @@ const mockProducts: Product[] = [
     unit: 'UN',
     costPrice: 45.0,
     supplier: 'Distribuidora Beauty',
-    location: 'Prateleira A1',
+    location: 'Prateleira A1'
   },
   {
     id: '2',
@@ -101,7 +107,7 @@ const mockProducts: Product[] = [
     costPrice: 85.0,
     salePrice: 150.0,
     supplier: 'Distribuidora Beauty',
-    location: 'Prateleira A2',
+    location: 'Prateleira A2'
   },
   {
     id: '3',
@@ -117,7 +123,7 @@ const mockProducts: Product[] = [
     costPrice: 18.0,
     salePrice: 35.0,
     supplier: 'Nail Supply',
-    location: 'Gaveta B3',
+    location: 'Gaveta B3'
   },
   {
     id: '4',
@@ -132,7 +138,7 @@ const mockProducts: Product[] = [
     unit: 'UN',
     costPrice: 32.0,
     supplier: 'Beauty Express',
-    location: 'Prateleira C1',
+    location: 'Prateleira C1'
   },
   {
     id: '5',
@@ -148,7 +154,7 @@ const mockProducts: Product[] = [
     costPrice: 120.0,
     salePrice: 220.0,
     supplier: 'Makeup Pro',
-    location: 'Vitrine 1',
+    location: 'Vitrine 1'
   },
   {
     id: '6',
@@ -163,9 +169,9 @@ const mockProducts: Product[] = [
     unit: 'UN',
     costPrice: 250.0,
     supplier: 'Tools Import',
-    location: 'Armário Ferramentas',
-  },
-];
+    location: 'Armário Ferramentas'
+  }
+]
 
 const mockMovements: StockMovement[] = [
   {
@@ -177,7 +183,7 @@ const mockMovements: StockMovement[] = [
     date: '2025-10-10',
     reason: 'Compra de estoque',
     userId: '1',
-    userName: 'Admin',
+    userName: 'Admin'
   },
   {
     id: '2',
@@ -188,7 +194,7 @@ const mockMovements: StockMovement[] = [
     date: '2025-10-12',
     reason: 'Venda para cliente',
     userId: '2',
-    userName: 'Ana Santos',
+    userName: 'Ana Santos'
   },
   {
     id: '3',
@@ -199,9 +205,9 @@ const mockMovements: StockMovement[] = [
     date: '2025-10-14',
     reason: 'Uso em serviços',
     userId: '3',
-    userName: 'Carla Lima',
-  },
-];
+    userName: 'Carla Lima'
+  }
+]
 
 const categoryLabels: Record<ProductCategory, string> = {
   HAIR: 'Cabelo',
@@ -209,60 +215,64 @@ const categoryLabels: Record<ProductCategory, string> = {
   SKINCARE: 'Skincare',
   MAKEUP: 'Maquiagem',
   TOOLS: 'Ferramentas',
-  OTHER: 'Outros',
-};
+  OTHER: 'Outros'
+}
 
 const movementTypeLabels: Record<MovementType, string> = {
   IN: 'Entrada',
   OUT: 'Saída',
-  ADJUSTMENT: 'Ajuste',
-};
+  ADJUSTMENT: 'Ajuste'
+}
 
 export default function EstoquePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [movements, setMovements] = useState<StockMovement[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const [isMovementDialogOpen, setIsMovementDialogOpen] = useState(false);
-  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [selectedProductHistory, setSelectedProductHistory] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState<'ALL' | ProductCategory>('ALL');
-  const [filterType, setFilterType] = useState<'ALL' | ProductType>('ALL');
-  const [showLowStock, setShowLowStock] = useState(false);
+  const [products, setProducts] = useState<Product[]>([])
+  const [movements, setMovements] = useState<StockMovement[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false)
+  const [isMovementDialogOpen, setIsMovementDialogOpen] = useState(false)
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [selectedProductHistory, setSelectedProductHistory] = useState<
+    string | null
+  >(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterCategory, setFilterCategory] = useState<'ALL' | ProductCategory>(
+    'ALL'
+  )
+  const [filterType, setFilterType] = useState<'ALL' | ProductType>('ALL')
+  const [showLowStock, setShowLowStock] = useState(false)
 
   useEffect(() => {
-    fetchProducts();
-    fetchMovements();
-  }, []);
+    fetchProducts()
+    fetchMovements()
+  }, [])
 
   const fetchProducts = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/products');
+      setLoading(true)
+      const response = await fetch('/api/products')
       if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
+        const data = await response.json()
+        setProducts(data)
       }
     } catch (error) {
-      console.error('Erro ao buscar produtos:', error);
+      console.error('Erro ao buscar produtos:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const fetchMovements = async () => {
     try {
-      const response = await fetch('/api/stock-movements');
+      const response = await fetch('/api/stock-movements')
       if (response.ok) {
-        const data = await response.json();
-        setMovements(data);
+        const data = await response.json()
+        setMovements(data)
       }
     } catch (error) {
-      console.error('Erro ao buscar movimentações:', error);
+      console.error('Erro ao buscar movimentações:', error)
     }
-  };
+  }
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -278,39 +288,44 @@ export default function EstoquePage() {
     salePrice: '',
     supplier: '',
     location: '',
-    notes: '',
-  });
+    notes: ''
+  })
 
   const [movementForm, setMovementForm] = useState({
     productId: '',
     type: 'IN' as MovementType,
     quantity: '',
-    reason: '',
-  });
+    reason: ''
+  })
 
   // Calcular estatísticas
   const stats = {
     totalProducts: products.length,
-    lowStockProducts: products.filter((p) => p.currentStock <= p.minStock).length,
-    totalValue: products.reduce((sum, p) => sum + p.currentStock * p.costPrice, 0),
-    revenueProducts: products.filter((p) => p.type === 'RESALE').length,
-  };
+    lowStockProducts: products.filter(p => p.currentStock <= p.minStock).length,
+    totalValue: products.reduce(
+      (sum, p) => sum + p.currentStock * p.costPrice,
+      0
+    ),
+    revenueProducts: products.filter(p => p.type === 'RESALE').length
+  }
 
   // Filtrar produtos
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'ALL' || product.category === filterCategory;
-    const matchesType = filterType === 'ALL' || product.type === filterType;
-    const matchesLowStock = !showLowStock || product.currentStock <= product.minStock;
-    return matchesSearch && matchesCategory && matchesType && matchesLowStock;
-  });
+      product.sku.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory =
+      filterCategory === 'ALL' || product.category === filterCategory
+    const matchesType = filterType === 'ALL' || product.type === filterType
+    const matchesLowStock =
+      !showLowStock || product.currentStock <= product.minStock
+    return matchesSearch && matchesCategory && matchesType && matchesLowStock
+  })
 
   const handleOpenProductDialog = (product?: Product) => {
     if (product) {
-      setEditingProduct(product);
+      setEditingProduct(product)
       setProductForm({
         name: product.name,
         type: product.type,
@@ -325,10 +340,10 @@ export default function EstoquePage() {
         salePrice: product.salePrice?.toString() || '',
         supplier: product.supplier || '',
         location: product.location || '',
-        notes: product.notes || '',
-      });
+        notes: product.notes || ''
+      })
     } else {
-      setEditingProduct(null);
+      setEditingProduct(null)
       setProductForm({
         name: '',
         type: 'SERVICE',
@@ -343,19 +358,19 @@ export default function EstoquePage() {
         salePrice: '',
         supplier: '',
         location: '',
-        notes: '',
-      });
+        notes: ''
+      })
     }
-    setIsProductDialogOpen(true);
-  };
+    setIsProductDialogOpen(true)
+  }
 
   const handleCloseProductDialog = () => {
-    setIsProductDialogOpen(false);
-    setEditingProduct(null);
-  };
+    setIsProductDialogOpen(false)
+    setEditingProduct(null)
+  }
 
   const handleSubmitProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const productData = {
       name: productForm.name,
@@ -368,76 +383,78 @@ export default function EstoquePage() {
       maxStock: parseFloat(productForm.maxStock),
       unit: productForm.unit,
       costPrice: parseFloat(productForm.costPrice),
-      salePrice: productForm.salePrice ? parseFloat(productForm.salePrice) : undefined,
+      salePrice: productForm.salePrice
+        ? parseFloat(productForm.salePrice)
+        : undefined,
       supplier: productForm.supplier || undefined,
       location: productForm.location || undefined,
-      notes: productForm.notes || undefined,
-    };
+      notes: productForm.notes || undefined
+    }
 
     try {
       if (editingProduct) {
         const response = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData),
-        });
+          body: JSON.stringify(productData)
+        })
 
         if (response.ok) {
-          await fetchProducts();
+          await fetchProducts()
         }
       } else {
         const response = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData),
-        });
+          body: JSON.stringify(productData)
+        })
 
         if (response.ok) {
-          await fetchProducts();
+          await fetchProducts()
         }
       }
 
-      handleCloseProductDialog();
+      handleCloseProductDialog()
     } catch (error) {
-      console.error('Erro ao salvar produto:', error);
+      console.error('Erro ao salvar produto:', error)
     }
-  };
+  }
 
   const handleDeleteProduct = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
       try {
         const response = await fetch(`/api/products/${id}`, {
-          method: 'DELETE',
-        });
+          method: 'DELETE'
+        })
 
         if (response.ok) {
-          await fetchProducts();
-          await fetchMovements();
+          await fetchProducts()
+          await fetchMovements()
         }
       } catch (error) {
-        console.error('Erro ao excluir produto:', error);
+        console.error('Erro ao excluir produto:', error)
       }
     }
-  };
+  }
 
   const handleOpenMovementDialog = (productId?: string) => {
     setMovementForm({
       productId: productId || '',
       type: 'IN',
       quantity: '',
-      reason: '',
-    });
-    setIsMovementDialogOpen(true);
-  };
+      reason: ''
+    })
+    setIsMovementDialogOpen(true)
+  }
 
   const handleSubmitMovement = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const product = products.find((p) => p.id === movementForm.productId);
-    if (!product) return;
+    const product = products.find(p => p.id === movementForm.productId)
+    if (!product) return
 
-    const quantity = parseFloat(movementForm.quantity);
-    
+    const quantity = parseFloat(movementForm.quantity)
+
     try {
       const response = await fetch('/api/stock-movements', {
         method: 'POST',
@@ -449,56 +466,68 @@ export default function EstoquePage() {
           quantity,
           reason: movementForm.reason,
           userId: '1',
-          userName: 'Admin',
-        }),
-      });
+          userName: 'Admin'
+        })
+      })
 
       if (response.ok) {
-        await fetchProducts();
-        await fetchMovements();
-        setIsMovementDialogOpen(false);
+        await fetchProducts()
+        await fetchMovements()
+        setIsMovementDialogOpen(false)
       }
     } catch (error) {
-      console.error('Erro ao criar movimentação:', error);
+      console.error('Erro ao criar movimentação:', error)
     }
-  };
+  }
 
   const handleViewHistory = (productId: string) => {
-    setSelectedProductHistory(productId);
-    setIsHistoryDialogOpen(true);
-  };
+    setSelectedProductHistory(productId)
+    setIsHistoryDialogOpen(true)
+  }
 
   const getStockStatus = (product: Product) => {
     if (product.currentStock === 0) {
-      return { label: 'Esgotado', color: 'text-red-500 bg-red-500/10' };
+      return { label: 'Esgotado', color: 'text-red-500 bg-red-500/10' }
     }
     if (product.currentStock <= product.minStock) {
-      return { label: 'Estoque Baixo', color: 'text-yellow-500 bg-yellow-500/10' };
+      return {
+        label: 'Estoque Baixo',
+        color: 'text-yellow-500 bg-yellow-500/10'
+      }
     }
     if (product.currentStock >= product.maxStock) {
-      return { label: 'Estoque Alto', color: 'text-blue-500 bg-blue-500/10' };
+      return { label: 'Estoque Alto', color: 'text-blue-500 bg-blue-500/10' }
     }
-    return { label: 'Normal', color: 'text-green-500 bg-green-500/10' };
-  };
+    return { label: 'Normal', color: 'text-green-500 bg-green-500/10' }
+  }
 
   const productHistory = selectedProductHistory
-    ? movements.filter((m) => m.productId === selectedProductHistory)
-    : [];
+    ? movements.filter(m => m.productId === selectedProductHistory)
+    : []
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap md:flex-nowrap">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Estoque</h1>
-          <p className="text-muted-foreground text-lg mt-1">Controle de produtos e materiais</p>
+          <p className="text-muted-foreground text-lg mt-1">
+            Controle de produtos e materiais
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => handleOpenMovementDialog()} className="gap-2">
+        <div className="flex gap-2 mt-3 md:mt-0 w-full md:w-auto flex-wrap md:flex-nowrap">
+          <Button
+            variant="outline"
+            onClick={() => handleOpenMovementDialog()}
+            className="gap-2 w-full md:w-auto"
+          >
             <TrendingUp className="h-4 w-4" />
             Nova Movimentação
           </Button>
-          <Button onClick={() => handleOpenProductDialog()} className="gap-2">
+          <Button
+            onClick={() => handleOpenProductDialog()}
+            className="gap-2 w-full md:w-auto"
+          >
             <Plus className="h-4 w-4" />
             Novo Produto
           </Button>
@@ -510,7 +539,9 @@ export default function EstoquePage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Total de Produtos</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Total de Produtos
+              </p>
               <p className="text-2xl font-bold mt-2">{stats.totalProducts}</p>
             </div>
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -522,8 +553,12 @@ export default function EstoquePage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Estoque Baixo</p>
-              <p className="text-2xl font-bold text-yellow-500 mt-2">{stats.lowStockProducts}</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Estoque Baixo
+              </p>
+              <p className="text-2xl font-bold text-yellow-500 mt-2">
+                {stats.lowStockProducts}
+              </p>
               <Button
                 variant="link"
                 size="sm"
@@ -542,7 +577,9 @@ export default function EstoquePage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Valor em Estoque</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Valor em Estoque
+              </p>
               <p className="text-2xl font-bold text-green-500 mt-2">
                 R$ {stats.totalValue.toFixed(2)}
               </p>
@@ -556,7 +593,9 @@ export default function EstoquePage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Produtos p/ Revenda</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Produtos p/ Revenda
+              </p>
               <p className="text-2xl font-bold mt-2">{stats.revenueProducts}</p>
             </div>
             <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -574,7 +613,7 @@ export default function EstoquePage() {
             <Input
               placeholder="Buscar por nome, marca ou SKU..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -595,7 +634,10 @@ export default function EstoquePage() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+          <Select
+            value={filterType}
+            onValueChange={(value: any) => setFilterType(value)}
+          >
             <SelectTrigger className="w-full lg:w-[180px]">
               <SelectValue />
             </SelectTrigger>
@@ -614,28 +656,40 @@ export default function EstoquePage() {
           <table className="w-full">
             <thead>
               <tr className="border-b">
-                <th className="text-left p-4 font-medium text-sm text-muted-foreground">Produto</th>
-                <th className="text-left p-4 font-medium text-sm text-muted-foreground">SKU</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">
+                  Produto
+                </th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">
+                  SKU
+                </th>
                 <th className="text-left p-4 font-medium text-sm text-muted-foreground">
                   Categoria
                 </th>
                 <th className="text-center p-4 font-medium text-sm text-muted-foreground">
                   Estoque
                 </th>
-                <th className="text-left p-4 font-medium text-sm text-muted-foreground">Status</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">
+                  Status
+                </th>
                 <th className="text-right p-4 font-medium text-sm text-muted-foreground">
                   Valor Unitário
                 </th>
-                <th className="text-center p-4 font-medium text-sm text-muted-foreground">Ações</th>
+                <th className="text-center p-4 font-medium text-sm text-muted-foreground">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => {
-                const stockStatus = getStockStatus(product);
-                const stockPercentage = (product.currentStock / product.maxStock) * 100;
+              {filteredProducts.map(product => {
+                const stockStatus = getStockStatus(product)
+                const stockPercentage =
+                  (product.currentStock / product.maxStock) * 100
 
                 return (
-                  <tr key={product.id} className="border-b last:border-0 hover:bg-muted/50">
+                  <tr
+                    key={product.id}
+                    className="border-b last:border-0 hover:bg-muted/50"
+                  >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -644,7 +698,10 @@ export default function EstoquePage() {
                         <div>
                           <p className="text-sm font-medium">{product.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {product.brand} • {product.type === 'SERVICE' ? 'Uso Interno' : 'Revenda'}
+                            {product.brand} •{' '}
+                            {product.type === 'SERVICE'
+                              ? 'Uso Interno'
+                              : 'Revenda'}
                           </p>
                         </div>
                       </div>
@@ -668,10 +725,12 @@ export default function EstoquePage() {
                               product.currentStock <= product.minStock
                                 ? 'bg-red-500'
                                 : product.currentStock >= product.maxStock
-                                ? 'bg-blue-500'
-                                : 'bg-green-500'
+                                  ? 'bg-blue-500'
+                                  : 'bg-green-500'
                             }`}
-                            style={{ width: `${Math.min(stockPercentage, 100)}%` }}
+                            style={{
+                              width: `${Math.min(stockPercentage, 100)}%`
+                            }}
                           />
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -688,7 +747,9 @@ export default function EstoquePage() {
                     </td>
                     <td className="p-4 text-right">
                       <div>
-                        <p className="text-sm font-medium">R$ {product.costPrice.toFixed(2)}</p>
+                        <p className="text-sm font-medium">
+                          R$ {product.costPrice.toFixed(2)}
+                        </p>
                         {product.salePrice && (
                           <p className="text-xs text-green-500">
                             Venda: R$ {product.salePrice.toFixed(2)}
@@ -737,7 +798,7 @@ export default function EstoquePage() {
                       </div>
                     </td>
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
@@ -755,7 +816,9 @@ export default function EstoquePage() {
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingProduct ? 'Editar Produto' : 'Novo Produto'}</DialogTitle>
+            <DialogTitle>
+              {editingProduct ? 'Editar Produto' : 'Novo Produto'}
+            </DialogTitle>
             <DialogDescription>
               {editingProduct
                 ? 'Atualize as informações do produto.'
@@ -770,7 +833,9 @@ export default function EstoquePage() {
                 <Input
                   id="name"
                   value={productForm.name}
-                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, name: e.target.value })
+                  }
                   placeholder="Ex: Shampoo Profissional"
                   required
                 />
@@ -820,7 +885,9 @@ export default function EstoquePage() {
                 <Input
                   id="brand"
                   value={productForm.brand}
-                  onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, brand: e.target.value })
+                  }
                   placeholder="Ex: L'Oreal"
                   required
                 />
@@ -831,7 +898,9 @@ export default function EstoquePage() {
                 <Input
                   id="sku"
                   value={productForm.sku}
-                  onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, sku: e.target.value })
+                  }
                   placeholder="Ex: SHA-001"
                   required
                 />
@@ -845,7 +914,12 @@ export default function EstoquePage() {
                   step="0.01"
                   min="0"
                   value={productForm.currentStock}
-                  onChange={(e) => setProductForm({ ...productForm, currentStock: e.target.value })}
+                  onChange={e =>
+                    setProductForm({
+                      ...productForm,
+                      currentStock: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
@@ -858,7 +932,9 @@ export default function EstoquePage() {
                   step="0.01"
                   min="0"
                   value={productForm.minStock}
-                  onChange={(e) => setProductForm({ ...productForm, minStock: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, minStock: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -871,7 +947,9 @@ export default function EstoquePage() {
                   step="0.01"
                   min="0"
                   value={productForm.maxStock}
-                  onChange={(e) => setProductForm({ ...productForm, maxStock: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, maxStock: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -880,7 +958,9 @@ export default function EstoquePage() {
                 <Label htmlFor="unit">Unidade *</Label>
                 <Select
                   value={productForm.unit}
-                  onValueChange={(value) => setProductForm({ ...productForm, unit: value })}
+                  onValueChange={value =>
+                    setProductForm({ ...productForm, unit: value })
+                  }
                 >
                   <SelectTrigger id="unit">
                     <SelectValue />
@@ -903,7 +983,12 @@ export default function EstoquePage() {
                   step="0.01"
                   min="0"
                   value={productForm.costPrice}
-                  onChange={(e) => setProductForm({ ...productForm, costPrice: e.target.value })}
+                  onChange={e =>
+                    setProductForm({
+                      ...productForm,
+                      costPrice: e.target.value
+                    })
+                  }
                   required
                 />
               </div>
@@ -917,7 +1002,12 @@ export default function EstoquePage() {
                     step="0.01"
                     min="0"
                     value={productForm.salePrice}
-                    onChange={(e) => setProductForm({ ...productForm, salePrice: e.target.value })}
+                    onChange={e =>
+                      setProductForm({
+                        ...productForm,
+                        salePrice: e.target.value
+                      })
+                    }
                     placeholder="Opcional"
                   />
                 </div>
@@ -928,7 +1018,9 @@ export default function EstoquePage() {
                 <Input
                   id="supplier"
                   value={productForm.supplier}
-                  onChange={(e) => setProductForm({ ...productForm, supplier: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, supplier: e.target.value })
+                  }
                   placeholder="Ex: Distribuidora Beauty"
                 />
               </div>
@@ -938,7 +1030,9 @@ export default function EstoquePage() {
                 <Input
                   id="location"
                   value={productForm.location}
-                  onChange={(e) => setProductForm({ ...productForm, location: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, location: e.target.value })
+                  }
                   placeholder="Ex: Prateleira A1"
                 />
               </div>
@@ -948,28 +1042,41 @@ export default function EstoquePage() {
                 <Input
                   id="notes"
                   value={productForm.notes}
-                  onChange={(e) => setProductForm({ ...productForm, notes: e.target.value })}
+                  onChange={e =>
+                    setProductForm({ ...productForm, notes: e.target.value })
+                  }
                   placeholder="Informações adicionais..."
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseProductDialog}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseProductDialog}
+              >
                 Cancelar
               </Button>
-              <Button type="submit">{editingProduct ? 'Salvar Alterações' : 'Cadastrar'}</Button>
+              <Button type="submit">
+                {editingProduct ? 'Salvar Alterações' : 'Cadastrar'}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
       {/* Movement Dialog */}
-      <Dialog open={isMovementDialogOpen} onOpenChange={setIsMovementDialogOpen}>
+      <Dialog
+        open={isMovementDialogOpen}
+        onOpenChange={setIsMovementDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Nova Movimentação</DialogTitle>
-            <DialogDescription>Registre entrada ou saída de produtos.</DialogDescription>
+            <DialogDescription>
+              Registre entrada ou saída de produtos.
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmitMovement} className="space-y-4">
@@ -977,16 +1084,19 @@ export default function EstoquePage() {
               <Label htmlFor="productId">Produto *</Label>
               <Select
                 value={movementForm.productId}
-                onValueChange={(value) => setMovementForm({ ...movementForm, productId: value })}
+                onValueChange={value =>
+                  setMovementForm({ ...movementForm, productId: value })
+                }
                 required
               >
                 <SelectTrigger id="productId">
                   <SelectValue placeholder="Selecione um produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products.map((product) => (
+                  {products.map(product => (
                     <SelectItem key={product.id} value={product.id}>
-                      {product.name} (Estoque: {product.currentStock} {product.unit})
+                      {product.name} (Estoque: {product.currentStock}{' '}
+                      {product.unit})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -1020,7 +1130,9 @@ export default function EstoquePage() {
                 step="0.01"
                 min="0.01"
                 value={movementForm.quantity}
-                onChange={(e) => setMovementForm({ ...movementForm, quantity: e.target.value })}
+                onChange={e =>
+                  setMovementForm({ ...movementForm, quantity: e.target.value })
+                }
                 required
               />
             </div>
@@ -1030,7 +1142,9 @@ export default function EstoquePage() {
               <Input
                 id="reason"
                 value={movementForm.reason}
-                onChange={(e) => setMovementForm({ ...movementForm, reason: e.target.value })}
+                onChange={e =>
+                  setMovementForm({ ...movementForm, reason: e.target.value })
+                }
                 placeholder="Ex: Compra de estoque, Uso em serviço, etc."
                 required
               />
@@ -1057,13 +1171,13 @@ export default function EstoquePage() {
             <DialogTitle>Histórico de Movimentações</DialogTitle>
             <DialogDescription>
               {selectedProductHistory &&
-                `Produto: ${products.find((p) => p.id === selectedProductHistory)?.name}`}
+                `Produto: ${products.find(p => p.id === selectedProductHistory)?.name}`}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3 max-h-[60vh] overflow-y-auto">
             {productHistory.length > 0 ? (
-              productHistory.map((movement) => (
+              productHistory.map(movement => (
                 <Card key={movement.id} className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
@@ -1072,34 +1186,45 @@ export default function EstoquePage() {
                           movement.type === 'IN'
                             ? 'bg-green-500/10'
                             : movement.type === 'OUT'
-                            ? 'bg-red-500/10'
-                            : 'bg-blue-500/10'
+                              ? 'bg-red-500/10'
+                              : 'bg-blue-500/10'
                         }`}
                       >
                         {movement.type === 'IN' ? (
                           <TrendingUp
                             className={`h-5 w-5 ${
-                              movement.type === 'IN' ? 'text-green-500' : 'text-red-500'
+                              movement.type === 'IN'
+                                ? 'text-green-500'
+                                : 'text-red-500'
                             }`}
                           />
                         ) : (
                           <TrendingDown
                             className={`h-5 w-5 ${
-                              movement.type === 'OUT' ? 'text-red-500' : 'text-blue-500'
+                              movement.type === 'OUT'
+                                ? 'text-red-500'
+                                : 'text-blue-500'
                             }`}
                           />
                         )}
                       </div>
                       <div>
                         <p className="text-sm font-medium">
-                          {movementTypeLabels[movement.type]} - {movement.quantity} unidades
+                          {movementTypeLabels[movement.type]} -{' '}
+                          {movement.quantity} unidades
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">{movement.reason}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {movement.reason}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Por: {movement.userName} •{' '}
-                          {format(new Date(movement.date), "dd/MM/yyyy 'às' HH:mm", {
-                            locale: ptBR,
-                          })}
+                          {format(
+                            new Date(movement.date),
+                            "dd/MM/yyyy 'às' HH:mm",
+                            {
+                              locale: ptBR
+                            }
+                          )}
                         </p>
                       </div>
                     </div>
@@ -1109,12 +1234,14 @@ export default function EstoquePage() {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Nenhuma movimentação encontrada</p>
+                <p className="text-muted-foreground">
+                  Nenhuma movimentação encontrada
+                </p>
               </div>
             )}
           </div>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
